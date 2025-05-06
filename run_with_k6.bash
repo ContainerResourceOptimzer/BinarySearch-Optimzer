@@ -7,8 +7,21 @@ IMAGE_NAME="my-nest-app"
 CONTAINER_NAME="test-api"
 PORT=3000
 
+# 입력 인자 검사
 if [ -z "$CPU" ] || [ -z "$MEM" ]; then
   echo "❗ Usage: $0 <CPU> <MEM_MB>"
+  exit 1
+fi
+
+# 이미지 유효성 검사
+if ! docker image inspect "$IMAGE_NAME" > /dev/null 2>&1; then
+  echo "🚨 Image ‘${IMAGE_NAME}’ does not exist, please do a docker build first."
+  exit 1
+fi
+
+# 포트 사용 여부 확인
+if lsof -i :$PORT >/dev/null 2>&1; then
+  echo "⚠️ Port ${PORT} is already in use. Specify a different port or exit and try again."
   exit 1
 fi
 
@@ -24,11 +37,11 @@ docker run -d --rm \
 
 # 2. Wait for container to be ready (you may adjust sleep or add healthcheck probe)
 echo "⏳ Waiting for API to start..."
-sleep 5
+sleep 3
 
 # 3. Run k6 test
 echo "🚀 Running k6 load test..."
-k6 run --summary-export result.json k6_script.test.ts
+k6 run --summary-export result/${CPU}cpu_${MEM}mem.json k6_script.test.ts
 
 # 4. Stop the container
 echo "🧹 Stopping container..."
