@@ -35,12 +35,24 @@ docker run -d --rm \
   -p ${PORT}:${PORT} \
   ${IMAGE_NAME}
 
-# 2. Wait for container to be ready (you may adjust sleep or add healthcheck probe)
+# 2. Test that the container is running (for up to 10 seconds)
 echo "⏳ Waiting for API to start..."
-sleep 3
+for i in {1..10}; do
+  if curl -sSf "http://localhost:${PORT}" 2> /dev/null; then
+    echo "✅ API response verified"
+    break
+  fi
+  sleep 1
+  if [ $i -eq 10 ]; then
+    echo "❌ The API has not started, exit."
+    docker stop "${CONTAINER_NAME}" > /dev/null
+    exit 1
+  fi
+done
 
 # 3. Run k6 test
 echo "🚀 Running k6 load test..."
+mkdir -p result
 k6 run --summary-export result/${CPU}cpu_${MEM}mem.json k6_script.test.ts
 
 # 4. Stop the container
