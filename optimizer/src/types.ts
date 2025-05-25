@@ -9,3 +9,8 @@ export interface InputConfig {
 	unit_cpu_cost: number;
 	unit_mem_cost: number;
 }
+
+export interface CostNode {
+	cost: number;
+	resource: [number, number];
+}

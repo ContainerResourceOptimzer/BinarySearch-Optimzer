@@ -1,6 +1,8 @@
 // src/optimizer.ts
 
+import { CostFunction } from "./CostFunction.js";
 import { execDockerRunner } from "./exec.js";
+import type { CostNode, InputConfig } from "./types";
 
 function binarySearchInArray(
 	cpu: number,
@@ -17,18 +19,21 @@ function binarySearchInArray(
 	else return binarySearchInArray(cpu, mem_lst, mid + 1, high);
 }
 
-export function optimize(
-	cpu_lst: number[],
-	mem_lst: number[]
-): [number, number] | null {
-	const heap: Array<[number, number]> = new Array<[number, number]>();
-	const rows = cpu_lst.length;
-	const cols = mem_lst.length;
+export function optimize(config: InputConfig): CostNode | null {
+	const heap = new CostFunction(config.unit_cpu_cost, config.unit_mem_cost);
+	const rows = config.cpu_range.length;
+	const cols = config.mem_range.length;
 
 	for (let i = 0; i < rows; i++) {
-		const memIdx = binarySearchInArray(cpu_lst[i], mem_lst, 0, cols);
-		if (memIdx < cols) heap.push([cpu_lst[i], mem_lst[memIdx]]);
+		const memIdx = binarySearchInArray(
+			config.cpu_range[i],
+			config.mem_range,
+			0,
+			cols
+		);
+		if (memIdx < cols)
+			heap.append([config.cpu_range[i], config.mem_range[memIdx]]);
 	}
 	console.log(heap);
-	return [0, 0];
+	return heap.pop();
 }

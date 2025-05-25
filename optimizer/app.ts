@@ -14,7 +14,7 @@ function main() {
 	const config: InputConfig = loadConfig();
 
 	console.log(config);
-	console.log(optimize(config.cpu_range, config.mem_range));
+	console.log(optimize(config));
 }
 
 main();
