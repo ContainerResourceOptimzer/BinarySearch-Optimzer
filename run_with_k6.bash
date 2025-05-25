@@ -55,9 +55,9 @@ echo "🚀 Running k6 load test..."
 mkdir -p ../result
 k6 run --summary-export ../result/${CPU}cpu_${MEM}mem.json ../k6_script.test.ts
 if [ $? -eq 0 ]; then
-  echo 'Success' > ../result/result
+  echo -n 'Success' > ../result/result
 else
- echo 'Fail' > ../result/result
+ echo -n 'Fail' > ../result/result
 fi
 
 # 4. Stop the container
