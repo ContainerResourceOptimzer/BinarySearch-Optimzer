@@ -38,7 +38,7 @@ docker run -d --rm \
 # 2. Test that the container is running (for up to 10 seconds)
 echo "⏳ Waiting for API to start..."
 for i in {1..10}; do
-  if curl -sSf "http://localhost:${PORT}" 2> /dev/null; then
+  if curl -sSf "http://localhost:${PORT}" > /dev/null 2>&1; then
     echo "✅ API response verified"
     break
   fi
@@ -52,8 +52,13 @@ done
 
 # 3. Run k6 test
 echo "🚀 Running k6 load test..."
-mkdir -p result
-k6 run --summary-export result/${CPU}cpu_${MEM}mem.json k6_script.test.ts
+mkdir -p ../result
+k6 run --summary-export ../result/${CPU}cpu_${MEM}mem.json ../k6_script.test.ts
+if [ $? -eq 0 ]; then
+  echo 'Success' > ../result/result
+else
+ echo 'Fail' > ../result/result
+fi
 
 # 4. Stop the container
 echo "🧹 Stopping container..."
