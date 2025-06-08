@@ -1,3 +1,5 @@
+// src/CostFucntion.ts
+
 import type { CostNode } from "./types";
 
 export class CostFunction {
@@ -11,7 +13,7 @@ export class CostFunction {
 		this.heap = [];
 	}
 
-	calcCost(resource: [number, number]): number {
+	private calcCost(resource: [number, number]): number {
 		return this.cpu_cost * resource[0] + this.mem_cost * resource[1];
 	}
 
