@@ -1,12 +1,12 @@
 version: '3.8'
 services:
   api:
-    image: my-nest-app
+    image: iamdudumon/my-nest-app
     container_name: test-api
     ports:
-      - "3000:3000"
-    mem_limit: ${MEM:-512m}
-    cpus: ${CPU:-1.0}
+      - "80:3000"
+    mem_limit: ${MEM:-128m}
+    cpus: ${CPU:-0.25}
     networks:
       - monitor_net
 
@@ -31,6 +31,19 @@ services:
       - "9090:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - monitor_net
+
+  k6:
+    image: grafana/k6
+    container_name: k6
+    depends_on:
+      - api
+    volumes:
+      - ../:/src
+    entrypoint: ["sh", "-c"]
+    command: >
+      "until wget -qO- http://test-api:3000/boards; do echo 'waiting for api...'; sleep 1; done; k6 run /src/k6_script.test.ts"
     networks:
       - monitor_net
 

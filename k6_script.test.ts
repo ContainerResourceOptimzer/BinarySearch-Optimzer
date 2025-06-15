@@ -17,7 +17,7 @@ export const options: Options = {
 	},
 };
 
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "http://test-api:3000";
 
 export default function () {
 	// 1. GET /users
