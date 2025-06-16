@@ -1,7 +1,7 @@
 version: '3.8'
 
 networks:
-  monitor_net:
+  analyzer_monitor_net:
     external: true  # 이미 만들어진 네트워크라면
   test_net:
     driver: bridge
@@ -15,7 +15,7 @@ services:
     mem_limit: ${MEM:-128m}
     cpus: ${CPU:-0.25}
     networks:
-      - monitor_net
+      - analyzer_monitor_net
 
   k6:
     image: grafana/k6
@@ -32,4 +32,4 @@ services:
     environment:
       - K6_PROMETHEUS_RW_SERVER_URL=http://prometheus:9090/api/v1/write
     networks:
-      - monitor_net
+      - analyzer_monitor_net
