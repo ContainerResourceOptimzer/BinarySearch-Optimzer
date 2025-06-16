@@ -53,7 +53,7 @@ done
 # 3. Run k6 test
 echo "🚀 Running k6 load test..."
 mkdir -p ../result
-k6 run --summary-export ../result/${CPU}cpu_${MEM}mem.json ../k6_script.test.ts
+k6 run --summary-export ../result/${CPU}cpu_${MEM}mem.json ../k6_script.test.ts > /dev/null 2>&1
 if [ $? -eq 0 ]; then
   echo -n 'Success' > ../result/result
 else
