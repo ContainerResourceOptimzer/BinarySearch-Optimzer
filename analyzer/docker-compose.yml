@@ -45,7 +45,7 @@ services:
       - ../:/src
     entrypoint: ["sh", "-c"]
     command: >
-      "until wget -qO- http://test-api:3000/boards; do echo 'waiting for api...'; sleep 1; done; k6 run --out prometheus-remote-write=http://prometheus:9090/api/v1/write /src/k6_script.test.ts"
+      "until wget -qO- http://test-api:3000/boards; do echo 'waiting for api...'; sleep 1; done; k6 run--out experimental-prometheus-rw=http://prometheus:9090/api/v1/write /src/k6_script.test.ts"
     networks:
       - monitor_net
 
