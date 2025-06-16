@@ -31,6 +31,9 @@ services:
       - "9090:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.enable-remote-write-receiver
     networks:
       - monitor_net
 
@@ -45,7 +48,9 @@ services:
       - ../:/src
     entrypoint: ["sh", "-c"]
     command: >
-      "until wget -qO- http://test-api:3000/boards; do echo 'waiting for api...'; sleep 1; done; k6 run--out experimental-prometheus-rw=http://prometheus:9090/api/v1/write /src/k6_script.test.ts"
+      "until wget -qO- http://test-api:3000/boards; do echo 'waiting for api...'; sleep 1; done; k6 run -o experimental-prometheus-rw /src/k6_script.test.ts"
+    environment:
+      - K6_PROMETHEUS_RW_SERVER_URL=http://prometheus:9090/api/v1/write
     networks:
       - monitor_net
 
