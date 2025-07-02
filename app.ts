@@ -4,7 +4,7 @@ import fs from "fs";
 import type { InputConfig } from "./src/types";
 import { Optimizer } from "./src/Optimizer.js";
 
-function loadConfig(path = "../input.json"): InputConfig {
+function loadConfig(path = "./input.json"): InputConfig {
 	const raw = fs.readFileSync(new URL(path, import.meta.url), "utf-8");
 	return JSON.parse(raw);
 }
