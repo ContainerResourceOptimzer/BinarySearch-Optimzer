@@ -1,7 +1,7 @@
 // app.ts
 
 import fs from "fs";
-import type { InputConfig } from "./src/types";
+import type { InputConfig } from "./src/types.js";
 import { Optimizer } from "./src/Optimizer.js";
 
 function loadConfig(path = "./input.json"): InputConfig {

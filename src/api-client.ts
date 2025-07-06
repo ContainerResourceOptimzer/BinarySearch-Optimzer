@@ -1,6 +1,6 @@
 // src/api-client.ts
 
-import type { JobResult } from "./types";
+import type { JobResult } from "./types.js";
 import { setTimeout as sleep } from "node:timers/promises";
 
 const BASE_URL = process.env.BACKEND_URL || "http://localhost:3000";

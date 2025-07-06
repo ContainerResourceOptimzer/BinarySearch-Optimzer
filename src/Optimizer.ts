@@ -2,7 +2,7 @@
 
 import pLimit from "p-limit";
 
-import type { InputConfig } from "./types";
+import type { InputConfig } from "./types.js";
 import { CostFunction } from "./CostFunction.js";
 import { execExperiment } from "./exec.js";
 
