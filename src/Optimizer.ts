@@ -1,8 +1,10 @@
 // src/Optimizer.ts
 
+import pLimit from "p-limit";
+
+import type { InputConfig } from "./types";
 import { CostFunction } from "./CostFunction.js";
-import { InputConfig } from "./types";
-import { execDockerRunner } from "./exec.js";
+import { execExperiment } from "./exec.js";
 
 export class Optimizer {
 	private costFunction: CostFunction;
@@ -16,37 +18,44 @@ export class Optimizer {
 		);
 	}
 
-	private binarySearchRecursive(
+	private async binarySearchRow(
 		cpu: number,
-		mem_lst: number[],
-		low: number,
-		high: number
-	): number {
-		if (low >= high) return low;
+		mem_lst: number[]
+	): Promise<number | null> {
+		let low = 0;
+		let high = mem_lst.length - 1;
+		let best: number | null = null;
 
-		const mid: number = Math.floor((low + high) / 2);
-		const result = execDockerRunner(cpu, mem_lst[mid]); // docker + test 실행
+		while (low <= high) {
+			const mid = Math.floor((low + high) / 2);
+			// === 실행 부분 : Runner Agent 호출 & Prometheus SLA 체크 ===
+			const pass = await execExperiment(cpu, mem_lst[mid]); // ← gRPC + PromQL
 
-		if (result) return this.binarySearchRecursive(cpu, mem_lst, low, mid);
-		else return this.binarySearchRecursive(cpu, mem_lst, mid + 1, high);
+			if (pass) {
+				best = mid;
+				high = mid - 1;
+			} else low = mid + 1;
+		}
+		return best;
 	}
 
-	run() {
-		const rows = this.config.cpu_range.length;
-		const cols = this.config.mem_range.length;
+	async run(): Promise<void> {
+		const limit = pLimit(
+			this.config.max_concurrency ?? this.config.cpu_range.length
+		);
 
-		for (let i = 0; i < rows; i++) {
-			const memIdx = this.binarySearchRecursive(
-				this.config.cpu_range[i],
-				this.config.mem_range,
-				0,
-				cols
-			);
-			if (memIdx < cols)
-				this.costFunction.append([
-					this.config.cpu_range[i],
-					this.config.mem_range[memIdx],
-				]);
-		}
+		const tasks = this.config.cpu_range.map((cpu) =>
+			limit(async () => {
+				const memIdx = await this.binarySearchRow(cpu, this.config.mem_range);
+				if (memIdx !== null) {
+					console.log(
+						`best resource: (${cpu}, ${this.config.mem_range[memIdx]})`
+					);
+					this.costFunction.append([cpu, this.config.mem_range[memIdx]]);
+				}
+			})
+		);
+
+		await Promise.all(tasks);
 	}
 }

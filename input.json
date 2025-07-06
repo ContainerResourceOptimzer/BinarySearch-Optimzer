@@ -4,5 +4,6 @@
   "cpu_range": [0.25, 0.5, 0.75, 1],
   "mem_range": [128, 256, 512, 768, 1024],
   "unit_cpu_cost": 10,
-  "unit_mem_cost": 8
+  "unit_mem_cost": 8,
+  "max_concurrency": 2
 }
