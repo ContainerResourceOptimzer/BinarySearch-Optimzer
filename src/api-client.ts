@@ -6,7 +6,7 @@ import { setTimeout as sleep } from "node:timers/promises";
 const BASE_URL = process.env.BACKEND_URL || "http://localhost:3000";
 const POLL_INTERVAL = 2000;
 
-export async function submitJob(cpu: number, mem: number): Promise<string> {
+export async function submitJob(cpu: number, mem: number): Promise<any> {
 	const res = await fetch(`${BASE_URL}/jobs`, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
@@ -14,19 +14,18 @@ export async function submitJob(cpu: number, mem: number): Promise<string> {
 	});
 	if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-	const data = await res.json();
-	return data.jobId;
+	return await res.json();
 }
 
-export async function pollJobResult(jobId: string): Promise<JobResult> {
-	while (true) {
-		const res = await fetch(`${BASE_URL}/jobs/${jobId}`, {
-			method: "GET",
-		});
-		if (!res.ok) throw new Error(`HTTP ${res.status}`);
+// export async function pollJobResult(jobId: string): Promise<JobResult> {
+// 	while (true) {
+// 		const res = await fetch(`${BASE_URL}/jobs/${jobId}`, {
+// 			method: "GET",
+// 		});
+// 		if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-		const data: JobResult = await res.json();
-		if (data.status === "done" || data.status === "failed") return data;
-		await sleep(POLL_INTERVAL);
-	}
-}
+// 		const data: JobResult = await res.json();
+// 		if (data.status === "done" || data.status === "failed") return data;
+// 		await sleep(POLL_INTERVAL);
+// 	}
+// }

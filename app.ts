@@ -1,7 +1,7 @@
 // app.ts
 
 import fs from "fs";
-import type { InputConfig } from "./src/types.js";
+import type { InputConfig, CostNode } from "./src/types.js";
 import { Optimizer } from "./src/Optimizer.js";
 
 function loadConfig(path = "./input.json"): InputConfig {
@@ -10,12 +10,18 @@ function loadConfig(path = "./input.json"): InputConfig {
 }
 
 // (여기서부터 for-loop + 이진 탐색 + run_with_k6.bash 호출 + 결과 파싱 등 구현)
-function main() {
+async function main() {
 	const config: InputConfig = loadConfig();
 	const optimizer: Optimizer = new Optimizer(config);
 
 	console.log(config);
-	optimizer.run();
+	await optimizer.run();
+
+	const best: CostNode = optimizer.costFunction.pop();
+	if (best)
+		console.log(
+			`best resource: (${best.resource[0]}, ${best.resource[1]})\ncost: ${best.cost}`
+		);
 }
 
-main();
+await main();

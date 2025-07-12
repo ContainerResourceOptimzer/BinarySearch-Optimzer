@@ -7,15 +7,19 @@ import { CostFunction } from "./CostFunction.js";
 import { execExperiment } from "./exec.js";
 
 export class Optimizer {
-	private costFunction: CostFunction;
+	private _costFunction: CostFunction;
 	private config: InputConfig;
 
 	constructor(config: InputConfig) {
 		this.config = config;
-		this.costFunction = new CostFunction(
+		this._costFunction = new CostFunction(
 			this.config.unit_cpu_cost,
 			this.config.unit_mem_cost
 		);
+	}
+
+	get costFunction() {
+		return this._costFunction;
 	}
 
 	private async binarySearchRow(
@@ -28,8 +32,7 @@ export class Optimizer {
 
 		while (low <= high) {
 			const mid = Math.floor((low + high) / 2);
-			// === 실행 부분 : Runner Agent 호출 & Prometheus SLA 체크 ===
-			const pass = await execExperiment(cpu, mem_lst[mid]); // ← gRPC + PromQL
+			const pass = await execExperiment(cpu, mem_lst[mid]); // Runner Agent 호출 & Prometheus SLA 체크
 
 			if (pass) {
 				best = mid;
@@ -48,10 +51,7 @@ export class Optimizer {
 			limit(async () => {
 				const memIdx = await this.binarySearchRow(cpu, this.config.mem_range);
 				if (memIdx !== null) {
-					console.log(
-						`best resource: (${cpu}, ${this.config.mem_range[memIdx]})`
-					);
-					this.costFunction.append([cpu, this.config.mem_range[memIdx]]);
+					this._costFunction.append([cpu, this.config.mem_range[memIdx]]);
 				}
 			})
 		);

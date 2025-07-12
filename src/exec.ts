@@ -1,12 +1,17 @@
 // src/exec.ts
 
-import { submitJob, pollJobResult } from "./api-client.js";
+import { submitJob } from "./api-client.js";
 
 export async function execExperiment(
 	cpu: number,
 	mem: number
 ): Promise<boolean> {
-	const jobId = await submitJob(cpu, mem);
-	const result = await pollJobResult(jobId);
-	return result.success; // SLA 통과 여부
+	console.log(`(${cpu}, ${mem}) resource testing started`);
+	const result = await submitJob(cpu, mem);
+	console.log(
+		`(${cpu}, ${mem}) resource SLA status: ` +
+			(result.success === true ? "Success" : "Fail")
+	);
+
+	return result.success;
 }
