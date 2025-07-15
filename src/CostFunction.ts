@@ -1,6 +1,6 @@
 // src/CostFucntion.ts
 
-import type { CostNode } from "./types";
+import type { CostNode } from "./types.js";
 
 export class CostFunction {
 	private cpu_cost: number;
