@@ -4,7 +4,11 @@ import pLimit from "p-limit";
 
 import type { InputConfig } from "./types.js";
 import { CostFunction } from "./CostFunction.js";
-import { execExperiment } from "./exec.js";
+import { execJob } from "./exec.js";
+
+function delay(ms: number) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 export class Optimizer {
 	private _costFunction: CostFunction;
@@ -32,7 +36,7 @@ export class Optimizer {
 
 		while (low <= high) {
 			const mid = Math.floor((low + high) / 2);
-			const pass = await execExperiment(cpu, mem_lst[mid]); // Runner Agent 호출 & Prometheus SLA 체크
+			const pass = await execJob(cpu, mem_lst[mid]); // Runner Agent 호출 & Prometheus SLA 체크
 
 			if (pass) {
 				best = mid;
@@ -47,8 +51,9 @@ export class Optimizer {
 			this.config.max_concurrency ?? this.config.cpu_range.length
 		);
 
-		const tasks = this.config.cpu_range.map((cpu) =>
+		const tasks = this.config.cpu_range.map((cpu, idx) =>
 			limit(async () => {
+				await delay(idx * 1000);
 				const memIdx = await this.binarySearchRow(cpu, this.config.mem_range);
 				if (memIdx !== null) {
 					this._costFunction.append([cpu, this.config.mem_range[memIdx]]);
