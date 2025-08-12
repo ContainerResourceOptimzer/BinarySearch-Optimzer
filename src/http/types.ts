@@ -8,6 +8,6 @@ export interface JobResult {
 }
 
 export interface RunJobResponse {
-	status: boolean;
+	success: boolean;
 	data: JobResult;
 }

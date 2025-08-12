@@ -2,9 +2,10 @@
 
 import pLimit from "p-limit";
 
-import type { InputConfig } from "./types.js";
+import type { CostNode, InputConfig } from "./types.js";
 import { CostFunction } from "./CostFunction.js";
 import { execJob } from "./exec.js";
+import { httpHandlers } from "./http/client.js";
 
 function delay(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
@@ -36,7 +37,7 @@ export class Optimizer {
 
 		while (low <= high) {
 			const mid = Math.floor((low + high) / 2);
-			const pass = await execJob(cpu, mem_lst[mid]); // Runner Agent 호출 & Prometheus SLA 체크
+			const pass = await execJob(this.config.exp_id, cpu, mem_lst[mid]); // Runner Agent 호출 & Prometheus SLA 체크
 
 			if (pass) {
 				best = mid;
@@ -62,5 +63,16 @@ export class Optimizer {
 		);
 
 		await Promise.all(tasks);
+
+		const best: CostNode = this.costFunction.pop();
+		if (best) {
+			httpHandlers.submitExperimentSummary(
+				this.config.exp_id,
+				best.resource[0],
+				best.resource[1]
+			);
+		} else {
+			httpHandlers.submitExperimentSummary(this.config.exp_id, 0, 0);
+		}
 	}
 }
