@@ -2,8 +2,7 @@
 
 // 입력 타입 정의 (Input.json)
 export interface InputConfig {
-	requests: number;
-	deadline_ms: number;
+	exp_id: string;
 	cpu_range: number[];
 	mem_range: number[];
 	unit_cpu_cost: number;

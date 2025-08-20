@@ -36,7 +36,7 @@ export class Optimizer {
 
 		while (low <= high) {
 			const mid = Math.floor((low + high) / 2);
-			const pass = await execJob(cpu, mem_lst[mid]); // Runner Agent 호출 & Prometheus SLA 체크
+			const pass = await execJob(this.config.exp_id, cpu, mem_lst[mid]); // Runner Agent 호출 & Prometheus SLA 체크
 
 			if (pass) {
 				best = mid;
