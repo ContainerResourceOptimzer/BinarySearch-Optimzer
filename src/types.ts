@@ -14,3 +14,11 @@ export interface CostNode {
 	cost: number;
 	resource: [number, number];
 }
+
+// 실험의 결과로 최적화된 자원 타입 정의
+export interface OptimalResource {
+	expId: string;
+	optimalJobId: string;
+	optimalCpu: number;
+	optimalMem: string;
+}

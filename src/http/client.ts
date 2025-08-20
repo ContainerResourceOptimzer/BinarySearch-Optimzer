@@ -21,4 +21,18 @@ export const httpHandlers = {
 		if (!response.success) throw new Error(`Failed Creating Container`);
 		return response.data;
 	},
+
+	submitExperimentSummary: async (
+		expId: string,
+		cpu: number,
+		mem: number
+	): Promise<void> => {
+		const res = await fetch(`${BASE_URL}/experiments/${expId}/summary`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ expId, optimalCpu: cpu, optimalMem: mem }),
+		});
+
+		if (!res.ok) throw new Error(`HTTP ${res.status}`);
+	},
 };
