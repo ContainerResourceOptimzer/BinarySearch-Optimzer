@@ -1,9 +1,8 @@
 {
-  "requests": 1000,
-  "deadline_ms": 3000,
-  "cpu_range": [0.25, 0.5, 0.75, 1],
-  "mem_range": [128, 256, 512, 768, 1024],
-  "unit_cpu_cost": 10,
-  "unit_mem_cost": 8,
+  "exp_id": "exp-1755030977635",
+  "cpu_range": [1.0, 1.25, 1.5, 1.75, 2.0, 2.25],
+  "mem_range": [512, 768, 1024, 1280, 1536, 2048],
+  "unit_cpu_cost": 5000,
+  "unit_mem_cost": 1,
   "max_concurrency": 2
 }

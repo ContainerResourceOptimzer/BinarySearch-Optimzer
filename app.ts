@@ -16,12 +16,6 @@ async function main() {
 
 	console.log(config);
 	await optimizer.run();
-
-	const best: CostNode = optimizer.costFunction.pop();
-	if (best)
-		console.log(
-			`best resource: (${best.resource[0]}, ${best.resource[1]})\ncost: ${best.cost}`
-		);
 }
 
 await main();
